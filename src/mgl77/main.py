@@ -17,13 +17,29 @@ from mgl77.fetch import fetch
 from mgl77.game_data import NavigationColumn, AllGameData
 from mgl77.time_keeper import time_keep
 
+import time
+import win32gui, win32process, win32con
+
 game_process: Optional[subprocess.Popen] = None
 time_keeper_thread: Optional[Thread] = None
 kill_window_event: Event = Event()
 end_thread_event: Event = Event()
 
+# プロセスIDからウィンドウハンドルを取得
+def get_hwnds_from_pid(pid):
+    def callback(hwnd, hwnds):
+        if win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd):
+            _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
+            if found_pid == pid:
+                hwnds.append(hwnd)
+        return True
+    
+    hwnds = []
+    win32gui.EnumWindows(callback, hwnds)
+    return hwnds
+
 def main(page: ft.Page):
-    page.title = "Routes Example"
+    page.title = "Mini game launcher"
 
     img_controller: Optional[ft.Container] = None
     img_part: Optional[ft.Container] = None
@@ -133,6 +149,10 @@ def main(page: ft.Page):
                     return
 
                 game_process = subprocess.Popen([str(game_data.game_exe.absolute())])
+                time.sleep(2)
+                hwnds = get_hwnds_from_pid(game_process.pid)
+                print(hwnds[0])
+                win32gui.SetWindowPos(hwnds[0], win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
 
             img_part = ft.Container(
                 ft.Column(
