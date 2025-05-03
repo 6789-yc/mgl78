@@ -21,8 +21,8 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-WARNING_SECS = 5 * 60
-KILL_SECS = 10 * 60
+WARNING_SECS = 5*60
+KILL_SECS = 7 * 60
 
 game_process: Optional[subprocess.Popen] = None
 
@@ -33,6 +33,7 @@ def time_keep(kill_window_event: Event, end_thread_event: Event, kill_func):
     start = time.time()
 
     while True:
+        # print(time.time())
         if end_thread_event.is_set():
             break
 
