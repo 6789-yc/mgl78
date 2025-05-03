@@ -20,6 +20,8 @@ from mgl77.time_keeper import time_keep
 import time
 import win32gui, win32process, win32con
 
+import pyautogui as pag
+
 game_process: Optional[subprocess.Popen] = None
 time_keeper_thread: Optional[Thread] = None
 kill_window_event: Event = Event()
@@ -147,12 +149,19 @@ def main(page: ft.Page):
                     page.update()
 
                     return
-
+                
                 game_process = subprocess.Popen([str(game_data.game_exe.absolute())])
-                time.sleep(2)
-                hwnds = get_hwnds_from_pid(game_process.pid)
-                print(hwnds[0])
+                def get_hwnds():
+                    time.sleep(0.5)
+                    hwnds = get_hwnds_from_pid(game_process.pid)
+                    return hwnds
+                hwnds = get_hwnds()
+                while len(hwnds) == 0:
+                    hwnds = get_hwnds()
                 win32gui.SetWindowPos(hwnds[0], win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+                l, t, _, _ = win32gui.GetWindowRect(hwnds[0])
+                pag.moveTo(l+60, t+10)
+                pag.click()
 
             img_part = ft.Container(
                 ft.Column(
