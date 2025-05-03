@@ -54,7 +54,7 @@ def main(page: ft.Page):
                 "/",
                 [
                     ft.Text(
-                        "AGC展ミニゲーム集", size=100, text_align=ft.TextAlign.CENTER
+                        "電脳展ミニゲーム集", size=100, text_align=ft.TextAlign.CENTER
                     ),
                     ft.ElevatedButton(
                         content=ft.Text("はじめる", size=36),
